@@ -3,6 +3,7 @@
 ## Description
 Attempted typescript solution to the Red Badger martian robots tech test.
 
+
 ## Getting started
 
 This project has been written using Node 20.x, it may not work with other versions.
@@ -23,4 +24,10 @@ npm test
 The project can be built via `tsc` using:
 ```shell
 npm run build
+```
+
+### Running the project
+The project can be run, from the root directory with:
+```shell
+node ./dist/index.js
 ```

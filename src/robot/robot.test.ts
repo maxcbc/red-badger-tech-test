@@ -1,25 +1,33 @@
 import {Robot, RobotOptions} from "./robot";
+import {Grid} from "../grid/grid";
 
 
 describe('class: Robot', () => {
     describe('constructor()', () => {
         test('a Robot is constructed with a default position at the origin', () => {
+            // Arrange
+            const grid = new Grid()
+
             // Act
-            const robot = new Robot()
+            const robot = new Robot(grid)
 
             // Assert
             expect(robot.x).toBe(0)
             expect(robot.y).toBe(0)
         })
         test('a Robot is constructed facing North by default', () => {
+            // Arrange
+            const grid = new Grid()
+
             // Act
-            const robot = new Robot()
+            const robot = new Robot(grid)
 
             // Assert
             expect(robot.currentAngle).toBe(0)
         })
         test('a Robot can be constructed with a supplied initial position and direction', () => {
             // Arrange
+            const grid = new Grid()
             const options: RobotOptions = {
                 x: 4,
                 y: 2,
@@ -27,7 +35,7 @@ describe('class: Robot', () => {
             }
 
             // Act
-            const robot = new Robot(options)
+            const robot = new Robot(grid, options)
 
             // Assert
             expect(robot.currentAngle).toBe(180)
@@ -36,6 +44,7 @@ describe('class: Robot', () => {
         })
         test('a robot can report is position in the proper format', () => {
             // Arrange
+            const grid = new Grid()
             const options: RobotOptions = {
                 x: 22,
                 y: 19,
@@ -43,10 +52,10 @@ describe('class: Robot', () => {
             }
 
             // Act
-            const robot = new Robot(options)
+            const robot = new Robot(grid, options)
 
             // Assert
-            expect(robot.position).toBe('22,19,E')
+            expect(robot.position).toBe('22 19 E')
         })
     })
 
@@ -60,7 +69,8 @@ describe('class: Robot', () => {
             [5, 270],
         ])('%i left turns results in an angle of %i degrees', (n, expected) => {
             // Arrange
-            const robot = new Robot()
+            const grid = new Grid()
+            const robot = new Robot(grid)
 
             // Act
             for (let i = 1; i <= n; i++) {
@@ -83,7 +93,8 @@ describe('class: Robot', () => {
             [5, 90],
         ])('%i right turns results in an angle of %i degrees', (n, expected) => {
             // Arrange
-            const robot = new Robot()
+            const grid = new Grid()
+            const robot = new Robot(grid)
 
             // Act
             for (let i = 1; i <= n; i++) {
@@ -104,7 +115,8 @@ describe('class: Robot', () => {
                 y: 0,
                 cardinalPoint: 'E'
             }
-            const robot = new Robot(options)
+            const grid = new Grid()
+            const robot = new Robot(grid, options)
 
             // Act
             robot.moveForward()
@@ -121,7 +133,8 @@ describe('class: Robot', () => {
                 y: 0,
                 cardinalPoint: 'W'
             }
-            const robot = new Robot(options)
+            const grid = new Grid()
+            const robot = new Robot(grid, options)
 
             // Act
             robot.moveForward()
@@ -139,7 +152,8 @@ describe('class: Robot', () => {
                 y: 0,
                 cardinalPoint: 'N'
             }
-            const robot = new Robot(options)
+            const grid = new Grid()
+            const robot = new Robot(grid, options)
 
             // Act
             robot.moveForward()
@@ -156,7 +170,8 @@ describe('class: Robot', () => {
                 y: 0,
                 cardinalPoint: 'S'
             }
-            const robot = new Robot(options)
+            const grid = new Grid()
+            const robot = new Robot(grid, options)
 
             // Act
             robot.moveForward()
@@ -165,6 +180,56 @@ describe('class: Robot', () => {
             expect(robot.x).toBe(0)
             expect(robot.y).toBe(-1)
         })
+
+        test('a robot that moves off the map is LOST', () => {
+            // Arrange
+            const options: RobotOptions = {
+                x: 2,
+                y: 2,
+                cardinalPoint: 'N'
+            }
+            const grid = new Grid({
+                size: {
+                    x: 3,
+                    y: 3
+                }
+            })
+            const robot = new Robot(grid, options)
+
+            // Act
+            robot.moveForward()
+
+            // Assert
+            expect(robot.position).toBe('2 3 N LOST')
+            expect(robot.isLost).toBe(true)
+            expect(grid.smells.has('2 2')).toBe(true)
+        })
+
+        test('a robot will not get LOST off a smelly grid square', () => {
+            // Arrange
+            const options: RobotOptions = {
+                x: 2,
+                y: 2,
+                cardinalPoint: 'N'
+            }
+            const grid = new Grid({
+                size: {
+                    x: 3,
+                    y: 3
+                }
+            })
+            grid.smells.add('2 2')
+            const robot = new Robot(grid, options)
+
+            // Act
+            robot.moveForward()
+
+            // Assert
+            expect(robot.position).toBe('2 2 N')
+            expect(robot.isLost).toBe(false)
+        })
+
+
     })
 
 })

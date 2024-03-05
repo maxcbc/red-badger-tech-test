@@ -1,3 +1,5 @@
+import {Grid} from "../grid/grid";
+
 export interface RobotOptions {
     x: number,
     y: number,
@@ -14,11 +16,17 @@ export class Robot {
     public x: number = 0
     public y: number = 0
     public currentAngle: number = 0
+    public grid: Grid
 
-    constructor(options: RobotOptions = DEFAULT_OPTIONS) {
+    constructor(grid: Grid, options: RobotOptions = DEFAULT_OPTIONS) {
         this.x = !isNaN(options.x) ? options.x : DEFAULT_OPTIONS.x;
         this.y = !isNaN(options.y) ? options.y : DEFAULT_OPTIONS.y;
         this.cardinalPoint = /^[NEWS]$/.test(options.cardinalPoint) ? options.cardinalPoint : DEFAULT_OPTIONS.cardinalPoint
+        this.grid = grid
+    }
+
+    get isLost(): boolean {
+        return this.grid.isOutOfBounds(this.x, this.y)
     }
 
     get cardinalPoint(): string{
@@ -52,7 +60,12 @@ export class Robot {
     }
 
     get position(): string {
-        return `${this.x},${this.y},${this.cardinalPoint}`
+        return [
+            this.x,
+            this.y,
+            this.cardinalPoint,
+            this.isLost ? 'LOST' : ''
+        ].join(' ').trim()
     }
 
     turnLeft() {
@@ -70,19 +83,37 @@ export class Robot {
     }
 
     moveForward() {
+        if (this.isLost) {
+            return
+        }
+        const oldX = this.x
+        const oldY = this.y
+        let newX = this.x
+        let newY = this.y
         switch(this.currentAngle) {
             case 0:
-                this.y += 1
+                newY += 1
                 break;
             case 90:
-                this.x += 1
+                newX += 1
                 break;
             case 180:
-                this.y -= 1
+                newY -= 1
                 break;
             case 270:
-                this.x -= 1
+                newX -= 1
                 break;
+        }
+        const willBeLost = this.grid.isOutOfBounds(newX, newY)
+        if (this.grid.smells.has(`${this.x} ${this.y}`) && willBeLost) {
+            return
+        }
+        this.x = newX
+        this.y = newY
+
+
+        if (this.isLost) {
+            this.grid.smells.add(`${oldX} ${oldY}`)
         }
     }
 }

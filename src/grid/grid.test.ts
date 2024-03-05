@@ -44,4 +44,83 @@ describe('class: Grid', () => {
             expect(grid.size.y).toBe(50)
         })
     })
+
+    describe('method: isOutOfBounds', () => {
+        test('it returns true if beyond x upper bound', () => {
+            // Arrange
+            const grid = new Grid({
+                size: {
+                    x: 5,
+                    y: 5
+                }
+            })
+
+            // Act
+            const actual = grid.isOutOfBounds(5, 4)
+
+            // Assert
+            expect(actual).toBeTruthy()
+        })
+        test('it returns true if beyond y upper bound', () => {
+            // Arrange
+            const grid = new Grid({
+                size: {
+                    x: 5,
+                    y: 5
+                }
+            })
+
+            // Act
+            const actual = grid.isOutOfBounds(4, 5)
+
+            // Assert
+            expect(actual).toBeTruthy()
+        })
+
+        test('it returns true if beyond x lower bound', () => {
+            // Arrange
+            const grid = new Grid({
+                size: {
+                    x: 5,
+                    y: 5
+                }
+            })
+
+            // Act
+            const actual = grid.isOutOfBounds(-1, 0)
+
+            // Assert
+            expect(actual).toBeTruthy()
+        })
+        test('it returns true if beyond y lower bound', () => {
+            // Arrange
+            const grid = new Grid({
+                size: {
+                    x: 5,
+                    y: 5
+                }
+            })
+
+            // Act
+            const actual = grid.isOutOfBounds(0, -1)
+
+            // Assert
+            expect(actual).toBeTruthy()
+        })
+        test('it returns false if within bounds', () => {
+            // Arrange
+            const grid = new Grid({
+                size: {
+                    x: 5,
+                    y: 5
+                }
+            })
+
+            // Act
+            const actual = grid.isOutOfBounds(4, 4)
+
+            // Assert
+            expect(actual).toBeFalsy()
+        })
+    })
 })
