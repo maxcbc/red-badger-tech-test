@@ -11,6 +11,7 @@
     "skipLibCheck": true
   },
   "exclude": [
-    "**/*.test.ts" // Exclude files with the test.ts suffix
+    "**/*.test.ts", // Exclude files with the test.ts suffix
+    "jest.config.ts"
   ]
 }
